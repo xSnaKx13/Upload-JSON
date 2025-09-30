@@ -1,31 +1,16 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"json/bins"
-	"time"
+	"json/storage"
 )
 
 func main() {
-	newBin, err := constructBin("231433312", true, "dea")
+	file, err := bins.CreateNewBin()
 	if err != nil {
-		fmt.Print("Ошибка ", err)
+		fmt.Println(err)
 	}
-	fmt.Print(newBin)
-}
-
-func constructBin(id string, private bool, name string) (*bins.Bin, error) {
-	if id == "" || len(id) == 0 {
-		return nil, errors.New("ID не может быть пустым")
-	}
-	if name == "" || len(name) == 0 {
-		return nil, errors.New("NAME не может быть пустым")
-	}
-	return &bins.Bin{
-		Id:        id,
-		Private:   private,
-		CreatedAt: time.Now(),
-		Name:      name,
-	}, nil
+	storage.WriteFileInJson(file)
+	storage.ReadJsonFile("content.json")
 }
