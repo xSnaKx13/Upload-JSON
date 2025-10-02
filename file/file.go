@@ -22,6 +22,7 @@ func WriteFile(b []byte) {
 		fmt.Println("Ошибка записи!")
 		return
 	}
+	fmt.Println("Запись прошла успешно.")
 }
 
 func ReadFile(name string) {

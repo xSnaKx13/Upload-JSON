@@ -13,19 +13,27 @@ type Bin struct {
 	Name      string    `json:"name"`
 }
 
-func CreateNewBin() ([]byte, error) {
-	bin := constructBin("33", true, "Тест")
-
-	file, err := bin.ToByte()
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-	return file, nil
+type BinList struct {
+	Bins []Bin
 }
 
-func (bin *Bin) ToByte() ([]byte, error) {
-	file, err := json.Marshal(bin)
+func CreateNewBin() (bin *Bin, err error) {
+	bin = constructBin("33", true, "Тест")
+
+	if bin.Id == "" {
+		fmt.Println("Не корректный ID!")
+		return
+	}
+
+	if bin.Name == "" {
+		fmt.Println("Не корректный ID!")
+		return
+	}
+	return bin, nil
+}
+
+func (binList *BinList) ToByte(bin *BinList) ([]byte, error) {
+	file, err := json.Marshal(binList)
 	if err != nil {
 		fmt.Println("Не удалось преобразовать в JSON")
 		return nil, err
@@ -42,6 +50,12 @@ func constructBin(id string, private bool, name string) *Bin {
 	}
 }
 
-type BinList struct {
-	Bins []*Bin
+func CnstructBinList() *BinList {
+	return &BinList{
+		Bins: []Bin{},
+	}
+}
+
+func (binList *BinList) AddBins(bin *Bin) {
+	binList.Bins = append(binList.Bins, *bin)
 }
