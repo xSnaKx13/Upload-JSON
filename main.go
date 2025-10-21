@@ -3,21 +3,14 @@ package main
 import (
 	"fmt"
 	"json/bins"
-	"json/storage"
+	"json/file"
 )
 
 func main() {
-	newBin, err := bins.CreateNewBin()
+	db := file.NewJsonDb("data.json")
+	_, err := bins.CreateBin(db)
 	if err != nil {
 		fmt.Println(err)
-		return
 	}
-	binList := bins.CnstructBinList()
-	binList.AddBins(newBin)
-	file, err := binList.ToByte(binList)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	storage.WriteFileInJson(file)
+
 }

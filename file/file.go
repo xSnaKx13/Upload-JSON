@@ -1,34 +1,41 @@
 package file
 
 import (
-	"bufio"
 	"fmt"
+	promptdata "json/promptData"
 	"os"
-	"strings"
 )
 
-func WriteFile(b []byte) {
-	fmt.Print("Введите название файла: ")
-	name, _ := bufio.NewReader(os.Stdin).ReadString('\n')
-	name = strings.TrimSpace(name)
-
-	file, err := os.Create(name)
-	if err != nil {
-		fmt.Println("Ошибка создания файла!")
-		return
-	}
-	_, err = file.Write(b)
-	if err != nil {
-		fmt.Println("Ошибка записи!")
-		return
-	}
-	fmt.Println("Запись прошла успешно.")
+type JsonDb struct {
+	Name string
 }
 
-func ReadFile(name string) {
-	file, err := os.ReadFile(name)
-	if err != nil {
-		fmt.Println(err)
+func NewJsonDb(name string) *JsonDb {
+	return &JsonDb{
+		Name: name,
 	}
-	fmt.Println(string(file))
+}
+
+func (db JsonDb) Read() ([]byte, error) {
+	data, err := os.ReadFile(db.Name)
+	if err != nil {
+		promptdata.PrintErr("Ошибка чтения файла!")
+		return nil, err
+	}
+	return data, nil
+}
+
+func (db JsonDb) Write(content []byte) {
+	data, err := os.Create(db.Name)
+	if err != nil {
+		promptdata.PrintErr("Ошибка создания файла!")
+		return
+	}
+	_, err = data.Write(content)
+	if err != nil {
+		promptdata.PrintErr("Ошибка записи в файл!")
+		return
+	}
+	fmt.Println("Запись данных успешна.")
+	defer data.Close()
 }
