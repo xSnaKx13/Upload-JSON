@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	promptdata "json/promptData"
+	"json/storage"
 	"time"
 )
 
@@ -21,8 +22,8 @@ type BinList struct {
 }
 
 type DB interface {
-	Read() ([]byte, error)
-	Write(content []byte)
+	ReadingFromFile() ([]byte, error)
+	WriteToFile(content []byte)
 }
 
 type BinListWithDb struct {
@@ -31,9 +32,9 @@ type BinListWithDb struct {
 }
 
 func CreateBin(db DB) (binListWithDb *BinListWithDb, err error) {
-	data, err := db.Read()
+	data, err := db.ReadingFromFile()
 	if err != nil {
-		db.Write(data)
+		promptdata.PrintErr(err)
 		return &BinListWithDb{
 			BinList: BinList{
 				Accounts:  []Bin{},
@@ -45,18 +46,19 @@ func CreateBin(db DB) (binListWithDb *BinListWithDb, err error) {
 	var binList BinList
 	err = json.Unmarshal(data, &binList)
 	if err != nil {
-		fmt.Println("Ошибка преобразования в struct!")
+		fmt.Println("Ошибка преобразования в STRUCT!")
 	}
 	bin, err := NewBin()
 	if err != nil {
 		fmt.Println(err)
 	}
 	binList.AddInBinList(bin)
-	content, err := binList.ToByte()
+	content, err := storage.ToByte(binList)
 	if err != nil {
 		fmt.Println(err)
 	}
-	db.Write(content)
+	db.WriteToFile(content)
+
 	return &BinListWithDb{
 		BinList: BinList{
 			Accounts:  binList.Accounts,
@@ -69,15 +71,6 @@ func CreateBin(db DB) (binListWithDb *BinListWithDb, err error) {
 func (binList *BinList) AddInBinList(bin *Bin) {
 	binList.Accounts = append(binList.Accounts, *bin)
 	binList.UpdatedAt = time.Now()
-}
-
-func (binList *BinList) ToByte() ([]byte, error) {
-	data, err := json.Marshal(binList)
-	if err != nil {
-		promptdata.PrintErr("Ошибка преобразования в JSON!")
-		return nil, err
-	}
-	return data, nil
 }
 
 func NewBin() (*Bin, error) {

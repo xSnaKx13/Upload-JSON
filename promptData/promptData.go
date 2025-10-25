@@ -19,13 +19,13 @@ func PromptData(prompt string) (string, error) {
 }
 
 func PrintErr(value any) {
-	switch t := value.(type) {
+	switch v := value.(type) {
 	case string:
-		fmt.Println(t)
+		fmt.Println("Ошибка:", v)
 	case int:
-		fmt.Printf("Код ошибки %d", t)
+		fmt.Printf("Код ошибки %d", v)
 	case error:
-		fmt.Println(t.Error())
+		fmt.Println("Ошибка:", v.Error())
 	default:
 		fmt.Println("Неизвестная ошибка!")
 	}
